@@ -17,6 +17,7 @@ contract Manager  is Ownable{
     struct Diesease {
         string name;
         string []symptoms;
+        string [] 
 
 
     }
