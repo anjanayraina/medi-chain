@@ -17,7 +17,6 @@ contract Manager  is Ownable{
 
     struct Diesease {
         string name;
-        string []symptoms;
         bool active;
 
     }
@@ -51,16 +50,37 @@ contract Manager  is Ownable{
 
     }
 
-    function addPatient(string calldata _name , uint8 _weight , string calldata _patientAddress ) external {        
+    function addPatient(address patientWalletAddress , string calldata _name , uint8 _weight , string calldata _patientAddress ) external {        
         require(_isDoctor(msg.sender) , "Not an Apporved Doctor");
-        require(allPatients[msg.sender].weight == 0  , "Patient Already Present");
-        Patient storage patient = allPatients[msg.sender];
+        require(allPatients[patientWalletAddress].weight == 0  , "Patient Already Present");
+        Patient storage patient = allPatients[patientWalletAddress];
         patient.name = _name;
         patient.weight = _weight;
         patient.patientAddress = _patientAddress;
     }
 
+    function updateMinorPatientDetails(uint8 _weight , string calldata _patientAddress , uint8 _bloodPressureUp , uint8 _bloodPressureDown) external patientPresent{
+        Patient storage patient = allPatients[msg.sender];
+        patient.weight = _weight;
+        patient.patientAddress = _patientAddress;
+        patient.lastUpdated = block.timestamp;
+        patient.bloodPressureUp  = _bloodPressureUp;
+        patient.bloodPressureDown = _bloodPressureDown;
+    }
+    function updatePatientDetails(address _walletAddress , uint8 _weight , string calldata _patientAddress , uint8 _bloodPressureUp , uint8 _bloodPressureDown , uint24 _bloodGlucose) external patientPresent{
+        Patient storage patient = allPatients[_walletAddress];
+        patient.weight = _weight;
+        patient.patientAddress = _patientAddress;
+        patient.lastUpdated = block.timestamp;
+        patient.bloodPressureUp  = _bloodPressureUp;
+        patient.bloodPressureDown = _bloodPressureDown;
+        patient.bloodGlucose = _bloodGlucose;
+    }
 
+    function addDiesease(address patientWalletAddress, string calldata _name) external {
+        Patient storage patient = allPatients[patientWalletAddress];
+        patient.allDieseases.push(Diesease(_name , true));
+    }
 
 
 
