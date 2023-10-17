@@ -59,6 +59,13 @@ contract Manager  is Ownable{
         patient.patientAddress = _patientAddress;
     }
 
+    function addPatient( string calldata _name , uint8 _weight , string calldata _patientAddress ) external {        
+        require(allPatients[msg.sender].weight == 0  , "Patient Already Present");
+        Patient storage patient = allPatients[msg.sender];
+        patient.name = _name;
+        patient.weight = _weight;
+        patient.patientAddress = _patientAddress;
+    }
     function updateMinorPatientDetails(uint8 _weight , string calldata _patientAddress , uint8 _bloodPressureUp , uint8 _bloodPressureDown) external patientPresent{
         Patient storage patient = allPatients[msg.sender];
         patient.weight = _weight;
@@ -68,6 +75,7 @@ contract Manager  is Ownable{
         patient.bloodPressureDown = _bloodPressureDown;
     }
     function updatePatientDetails(address _walletAddress , uint8 _weight , string calldata _patientAddress , uint8 _bloodPressureUp , uint8 _bloodPressureDown , uint24 _bloodGlucose) external patientPresent{
+        require(_isDoctor(msg.sender) , "Caller is not a Doctor");
         Patient storage patient = allPatients[_walletAddress];
         patient.weight = _weight;
         patient.patientAddress = _patientAddress;
@@ -78,6 +86,7 @@ contract Manager  is Ownable{
     }
 
     function addDiesease(address patientWalletAddress, string calldata _name) external {
+        require(_isDoctor(msg.sender) , "Caller is not a Doctor");
         Patient storage patient = allPatients[patientWalletAddress];
         patient.allDieseases.push(Diesease(_name , true));
     }
